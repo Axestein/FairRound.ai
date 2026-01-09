@@ -1,0 +1,547 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { width: 300px; padding: 15px; font-family: Arial; }
+    .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
+    .active { background: #d4edda; color: #155724; }
+    .inactive { background: #f8d7da; color: #721c24; }
+    button { padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h3>Interview Monitor</h3>
+  <div id="status" class="status active">🟢 Monitoring Active</div>
+  <p>Tab Switches: <span id="tabCount">0</span></p>
+  <p>Paste Events: <span id="pasteCount">0</span></p>
+  <button id="toggle">Stop Monitoring</button>
+  <script src="popup.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interview Monitor</title>
+    <style>
+        /* Premium CSS Design */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 420px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: white;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 20px;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 25px 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .logo-text h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            color: white;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary);
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.active { background: #10b981; }
+        .status-indicator.inactive { background: var(--gray); }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-text.active { color: #10b981; }
+        .status-text.inactive { color: var(--gray); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Content */
+        .content {
+            padding: 25px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Risk Level */
+        .risk-card {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            border-radius: var(--radius);
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .risk-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .risk-title {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .risk-level {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .risk-level.low { color: #10b981; }
+        .risk-level.medium { color: #f59e0b; }
+        .risk-level.high { color: #ef4444; }
+
+        .risk-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .risk-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .risk-fill.low { background: #10b981; width: 30%; }
+        .risk-fill.medium { background: #f59e0b; width: 60%; }
+        .risk-fill.high { background: #ef4444; width: 90%; }
+
+        /* Controls */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn i {
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--dark);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: white;
+            color: var(--danger);
+            border: 2px solid var(--border);
+        }
+
+        .btn-danger:hover {
+            border-color: var(--danger);
+            transform: translateY(-1px);
+        }
+
+        .btn.active {
+            background: var(--secondary);
+        }
+
+        .btn.inactive {
+            background: var(--gray);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px 25px;
+            background: #f9fafb;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .last-updated {
+            font-size: 11px;
+            color: var(--gray);
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray);
+        }
+
+        .footer-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: white;
+            color: var(--dark);
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            font-weight: 600;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .notification::before {
+            content: '🔔';
+            margin-right: 10px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: white;
+            color: var(--dark);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            font-weight: 600;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .toast.success { border-left: 4px solid var(--secondary); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Icons */
+        @font-face {
+            font-family: 'Icons';
+            src: url('data:application/x-font-woff2;charset=utf-8;base64,/* Icon font base64 here */');
+        }
+
+        .icon-monitor::before { content: '📊'; }
+        .icon-stop::before { content: '⏹️'; }
+        .icon-play::before { content: '▶️'; }
+        .icon-reset::before { content: '🔄'; }
+        .icon-test::before { content: '🧪'; }
+        .icon-dashboard::before { content: '📈'; }
+        .icon-details::before { content: '🔍'; }
+        .icon-settings::before { content: '⚙️'; }
+        .icon-loading::before { content: '⏳'; }
+        .icon-tab::before { content: '📑'; }
+        .icon-paste::before { content: '📋'; }
+        .icon-risk::before { content: '⚠️'; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <img src="/icons/icon.png" alt="FairRound.ai Logo" class="logo-icon">            
+                <div class="logo-text">
+                    <h1>FairRound.ai</h1>
+                    <p>Detect AI-assisted behavior in real-time</p>
+                </div>
+            </div>
+            
+            <div class="status-bar">
+                <div class="status-indicator active" id="statusIndicator"></div>
+                <span class="status-text active" id="statusText">Active</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card" id="tabCard">
+                    <div class="stat-icon icon-tab"></div>
+                    <div class="stat-value" id="tabCount">0</div>
+                    <div class="stat-label">Tab Switches</div>
+                </div>
+                
+                <div class="stat-card" id="pasteCard">
+                    <div class="stat-icon icon-paste"></div>
+                    <div class="stat-value" id="pasteCount">0</div>
+                    <div class="stat-label">Paste Events</div>
+                </div>
+            </div>
+
+            <!-- Risk Level -->
+            <div class="risk-card">
+                <div class="risk-title">AI ASSISTANCE RISK</div>
+                <div class="risk-level low" id="riskLevel">0%</div>
+                <div class="risk-bar">
+                    <div class="risk-fill low" id="riskFill"></div>
+                </div>
+                <div class="risk-labels">
+                    <span style="float: left;">Low</span>
+                    <span style="float: right;">High</span>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn btn-primary active" id="toggleMonitor">
+                    <i class="icon-stop"></i> Stop Monitoring
+                </button>
+                
+                <button class="btn btn-secondary" id="resetCounts">
+                    <i class="icon-reset"></i> Reset
+                </button>
+                
+                <button class="btn btn-secondary" id="testBackend">
+                    <i class="icon-test"></i> Test Backend
+                </button>
+                
+                <button class="btn btn-secondary" id="openDashboard">
+                    <i class="icon-dashboard"></i> Debug
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="last-updated" id="lastUpdated">Updated: Just now</div>
+            <div class="footer-buttons">
+                <button class="footer-btn" id="viewDetails" title="View Details">
+                    <i class="icon-details"></i>
+                </button>
+                <button class="footer-btn" id="openSettings" title="Settings">
+                    <i class="icon-settings"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
