@@ -342,7 +342,7 @@ async def debug_page():
     </head>
     <body>
         <div class="container">
-            <h1>📊 Interview Monitor - Debug Dashboard</h1>
+            <h1>Interview Monitor - Debug Dashboard</h1>
             
             <div class="api-status">
                 <span class="status-indicator status-active"></span>
@@ -352,11 +352,11 @@ async def debug_page():
             </div>
             
             <div class="controls">
-                <button class="button" onclick="location.reload()">🔄 Refresh Data</button>
-                <button class="button button-test" onclick="testConnection()">🛜 Test Connection</button>
-                <button class="button button-test" onclick="sendTestEvent()">🧪 Send Test Event</button>
-                <button class="button button-danger" onclick="clearEvents()">🗑️ Clear All Events</button>
-                <a href="http://localhost:3000" target="_blank" class="button button-test">📈 Open Frontend Dashboard</a>
+                <button class="button" onclick="location.reload()">Refresh Data</button>
+                <button class="button button-test" onclick="testConnection()">Test Connection</button>
+                <button class="button button-test" onclick="sendTestEvent()">Send Test Event</button>
+                <button class="button button-danger" onclick="clearEvents()">Clear All Events</button>
+                <a href="http://localhost:3000" target="_blank" class="button button-test">Open Frontend Dashboard</a>
             </div>
             
             <div class="stats-grid">

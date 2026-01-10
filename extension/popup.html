@@ -1,24 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { width: 300px; padding: 15px; font-family: Arial; }
-    .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
-    .active { background: #d4edda; color: #155724; }
-    .inactive { background: #f8d7da; color: #721c24; }
-    button { padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-  </style>
-</head>
-<body>
-  <h3>Interview Monitor</h3>
-  <div id="status" class="status active">🟢 Monitoring Active</div>
-  <p>Tab Switches: <span id="tabCount">0</span></p>
-  <p>Paste Events: <span id="pasteCount">0</span></p>
-  <button id="toggle">Stop Monitoring</button>
-  <script src="popup.js"></script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Interview Monitor</title>
     <style>
-        /* Premium CSS Design */
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #10b981;
-            --danger: #ef4444;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
             --warning: #f59e0b;
-            --dark: #1f2937;
-            --light: #f9fafb;
-            --gray: #6b7280;
-            --border: #e5e7eb;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --danger: #ef4444;
+            --border: #334155;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
             --radius: 12px;
             --transition: all 0.3s ease;
         }
@@ -49,74 +30,59 @@
         }
 
         body {
-            width: 420px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 380px;
+            background: var(--bg-primary);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: white;
+            color: var(--text-primary);
             padding: 0;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin: 20px;
-            overflow: hidden;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
         }
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            padding: 25px 25px 20px;
-            text-align: center;
-            position: relative;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 4px;
-            background: var(--secondary);
-            border-radius: 2px;
+            background: var(--bg-primary);
+            padding: 24px 24px 20px;
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: white;
-            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-primary), #1d4ed8);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            color: var(--primary);
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .logo-text h1 {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
             margin: 0;
-            color: white;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
         }
 
         .logo-text p {
-            font-size: 12px;
-            opacity: 0.9;
-            margin: 0;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 2px 0 0 0;
             font-weight: 500;
         }
 
@@ -124,57 +90,76 @@
         .status-bar {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .status-indicator {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: var(--secondary);
+            background: var(--success);
             animation: pulse 2s infinite;
         }
 
-        .status-indicator.active { background: #10b981; }
-        .status-indicator.inactive { background: var(--gray); }
-
-        .status-text {
-            font-size: 14px;
-            font-weight: 600;
+        .status-indicator.inactive { 
+            background: var(--text-muted); 
+            animation: none;
         }
 
-        .status-text.active { color: #10b981; }
-        .status-text.inactive { color: var(--gray); }
+        .status-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.inactive {
+            background: rgba(100, 116, 139, 0.15);
+            color: var(--text-muted);
+        }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.95); }
         }
 
         /* Main Content */
         .content {
-            padding: 25px;
+            padding: 24px;
         }
 
         /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            text-align: center;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            padding: 18px;
             border: 1px solid var(--border);
             transition: var(--transition);
             cursor: pointer;
@@ -182,170 +167,210 @@
 
         .stat-card:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
-            border-color: var(--primary);
+            border-color: var(--accent-primary);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
         }
 
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
-            border-radius: 10px;
+        .stat-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 20px;
-            color: var(--primary);
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 5px;
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
 
         .stat-label {
-            font-size: 12px;
-            color: var(--gray);
+            font-size: 11px;
+            color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
+        .stat-icon {
+            font-size: 18px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
         /* Risk Level */
         .risk-card {
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            border-radius: var(--radius);
-            padding: 25px;
-            text-align: center;
-            margin-bottom: 25px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
             position: relative;
             overflow: hidden;
         }
 
-        .risk-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        .risk-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
         }
 
         .risk-title {
-            font-size: 14px;
-            color: #9ca3af;
-            margin-bottom: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-value-container {
+            text-align: center;
+            margin-bottom: 16px;
         }
 
         .risk-level {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 800;
-            margin-bottom: 15px;
+            line-height: 1;
+            margin-bottom: 8px;
         }
 
-        .risk-level.low { color: #10b981; }
-        .risk-level.medium { color: #f59e0b; }
-        .risk-level.high { color: #ef4444; }
+        .risk-level.low { color: var(--success); }
+        .risk-level.medium { color: var(--warning); }
+        .risk-level.high { color: var(--danger); }
+
+        .risk-label {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-label.low { 
+            background: rgba(16, 185, 129, 0.15); 
+            color: var(--success); 
+        }
+        .risk-label.medium { 
+            background: rgba(245, 158, 11, 0.15); 
+            color: var(--warning); 
+        }
+        .risk-label.high { 
+            background: rgba(239, 68, 68, 0.15); 
+            color: var(--danger); 
+        }
 
         .risk-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
             overflow: hidden;
-            margin-bottom: 10px;
+            position: relative;
         }
 
         .risk-fill {
             height: 100%;
-            border-radius: 3px;
-            transition: width 0.5s ease;
+            border-radius: 4px;
+            transition: width 0.5s ease, background 0.3s ease;
+            position: relative;
         }
 
-        .risk-fill.low { background: #10b981; width: 30%; }
-        .risk-fill.medium { background: #f59e0b; width: 60%; }
-        .risk-fill.high { background: #ef4444; width: 90%; }
+        .risk-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .risk-fill.low { background: var(--success); }
+        .risk-fill.medium { background: var(--warning); }
+        .risk-fill.high { background: var(--danger); }
 
         /* Controls */
         .controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
         }
 
         .btn {
-            padding: 12px 15px;
+            padding: 12px 16px;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             transition: var(--transition);
-        }
-
-        .btn i {
-            font-size: 16px;
+            border: 1px solid var(--border);
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: var(--accent-primary);
             color: white;
+            border-color: var(--accent-primary);
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
             transform: translateY(-1px);
         }
 
         .btn-secondary {
-            background: white;
-            color: var(--dark);
-            border: 2px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--border);
         }
 
         .btn-secondary:hover {
-            border-color: var(--primary);
+            border-color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.1);
             transform: translateY(-1px);
         }
 
         .btn-danger {
-            background: white;
+            background: var(--bg-primary);
             color: var(--danger);
-            border: 2px solid var(--border);
+            border-color: var(--border);
         }
 
         .btn-danger:hover {
             border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
             transform: translateY(-1px);
         }
 
         .btn.active {
-            background: var(--secondary);
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
         }
 
         .btn.inactive {
-            background: var(--gray);
+            background: var(--bg-tertiary);
+            border-color: var(--border);
+            color: var(--text-muted);
         }
 
         /* Footer */
         .footer {
-            padding: 20px 25px;
-            background: #f9fafb;
+            padding: 16px 24px;
+            background: var(--bg-primary);
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -354,32 +379,34 @@
 
         .last-updated {
             font-size: 11px;
-            color: var(--gray);
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         .footer-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .footer-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: var(--bg-secondary);
             border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: var(--transition);
-            color: var(--gray);
+            color: var(--text-secondary);
+            font-size: 14px;
         }
 
         .footer-btn:hover {
-            background: var(--primary);
+            background: var(--accent-primary);
             color: white;
-            border-color: var(--primary);
+            border-color: var(--accent-primary);
             transform: translateY(-2px);
         }
 
@@ -389,13 +416,15 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(-100px);
-            background: white;
-            color: var(--dark);
-            padding: 15px 20px;
-            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 14px 18px;
+            border-radius: 8px;
             box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             z-index: 1000;
             font-weight: 600;
+            font-size: 13px;
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
         }
@@ -405,53 +434,49 @@
             opacity: 1;
         }
 
-        .notification::before {
-            content: '🔔';
-            margin-right: 10px;
-        }
-
         /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: white;
-            color: var(--dark);
-            padding: 12px 20px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 12px 18px;
             border-radius: 8px;
             box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             z-index: 1000;
             font-weight: 600;
+            font-size: 13px;
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
-        .toast.success { border-left: 4px solid var(--secondary); }
-        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--danger); }
         .toast.show {
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
 
-        /* Icons */
-        @font-face {
-            font-family: 'Icons';
-            src: url('data:application/x-font-woff2;charset=utf-8;base64,/* Icon font base64 here */');
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .icon-monitor::before { content: '📊'; }
-        .icon-stop::before { content: '⏹️'; }
-        .icon-play::before { content: '▶️'; }
-        .icon-reset::before { content: '🔄'; }
-        .icon-test::before { content: '🧪'; }
-        .icon-dashboard::before { content: '📈'; }
-        .icon-details::before { content: '🔍'; }
-        .icon-settings::before { content: '⚙️'; }
-        .icon-loading::before { content: '⏳'; }
-        .icon-tab::before { content: '📑'; }
-        .icon-paste::before { content: '📋'; }
-        .icon-risk::before { content: '⚠️'; }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
     </style>
 </head>
 <body>
@@ -459,16 +484,19 @@
         <!-- Header -->
         <div class="header">
             <div class="logo">
-                <img src="/icons/icon.png" alt="FairRound.ai Logo" class="logo-icon">            
+                <img src="/icons/icon.png" alt="Logo" class="logo-icon">
                 <div class="logo-text">
                     <h1>FairRound.ai</h1>
-                    <p>Detect AI-assisted behavior in real-time</p>
+                    <p>Real-time interview monitoring</p>
                 </div>
             </div>
             
             <div class="status-bar">
-                <div class="status-indicator active" id="statusIndicator"></div>
-                <span class="status-text active" id="statusText">Active</span>
+                <div class="status-left">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <span class="status-text" id="statusText">Monitoring Active</span>
+                </div>
+                <span class="status-badge" id="statusBadge">LIVE</span>
             </div>
         </div>
 
@@ -477,47 +505,50 @@
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card" id="tabCard">
-                    <div class="stat-icon icon-tab"></div>
+                    <div class="stat-header">
+                        <span class="stat-label">Tab Switches</span>
+                    </div>
                     <div class="stat-value" id="tabCount">0</div>
-                    <div class="stat-label">Tab Switches</div>
                 </div>
                 
                 <div class="stat-card" id="pasteCard">
-                    <div class="stat-icon icon-paste"></div>
+                    <div class="stat-header">
+                        <span class="stat-label">Paste Events</span>
+                    </div>
                     <div class="stat-value" id="pasteCount">0</div>
-                    <div class="stat-label">Paste Events</div>
                 </div>
             </div>
 
             <!-- Risk Level -->
             <div class="risk-card">
-                <div class="risk-title">AI ASSISTANCE RISK</div>
-                <div class="risk-level low" id="riskLevel">0%</div>
-                <div class="risk-bar">
-                    <div class="risk-fill low" id="riskFill"></div>
+                <div class="risk-header">
+                    <span class="risk-title">Risk Assessment</span>
                 </div>
-                <div class="risk-labels">
-                    <span style="float: left;">Low</span>
-                    <span style="float: right;">High</span>
+                <div class="risk-value-container">
+                    <div class="risk-level low" id="riskLevel">0%</div>
+                    <span class="risk-label low" id="riskLabel">Low Risk</span>
+                </div>
+                <div class="risk-bar">
+                    <div class="risk-fill low" id="riskFill" style="width: 0%"></div>
                 </div>
             </div>
 
             <!-- Controls -->
             <div class="controls">
                 <button class="btn btn-primary active" id="toggleMonitor">
-                    <i class="icon-stop"></i> Stop Monitoring
+                    Stop Monitor
                 </button>
                 
                 <button class="btn btn-secondary" id="resetCounts">
-                    <i class="icon-reset"></i> Reset
+                    Reset
                 </button>
                 
                 <button class="btn btn-secondary" id="testBackend">
-                    <i class="icon-test"></i> Test Backend
+                    Test Backend
                 </button>
                 
                 <button class="btn btn-secondary" id="openDashboard">
-                    <i class="icon-dashboard"></i> Debug
+                    Dashboard
                 </button>
             </div>
         </div>
@@ -526,12 +557,8 @@
         <div class="footer">
             <div class="last-updated" id="lastUpdated">Updated: Just now</div>
             <div class="footer-buttons">
-                <button class="footer-btn" id="viewDetails" title="View Details">
-                    <i class="icon-details"></i>
-                </button>
-                <button class="footer-btn" id="openSettings" title="Settings">
-                    <i class="icon-settings"></i>
-                </button>
+                <button class="footer-btn" id="viewDetails" title="View Details">🔍</button>
+                <button class="footer-btn" id="openSettings" title="Settings">⚙️</button>
             </div>
         </div>
     </div>

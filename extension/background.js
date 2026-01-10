@@ -107,7 +107,7 @@ class InterviewMonitor {
     this.pasteCount = data.pasteCount || 0;
     this.isMonitoring = data.isMonitoring !== false; // Default to true
     
-    console.log(`🎯 Interview Monitor Initialized`);
+    console.log(`   Interview Monitor Initialized`);
     console.log(`   Tab Switches: ${this.tabSwitchCount}`);
     console.log(`   Paste Events: ${this.pasteCount}`);
     console.log(`   Monitoring: ${this.isMonitoring ? '🟢 Active' : '🔴 Inactive'}`);
@@ -138,7 +138,7 @@ class InterviewMonitor {
       if (!this.isMonitoring) return;
       
       this.tabSwitchCount++;
-      console.log(`🔄 Tab Switch #${this.tabSwitchCount}`);
+      console.log(`Tab Switch #${this.tabSwitchCount}`);
       
       this.sendEventToBackend({
         type: "TAB_SWITCH",
@@ -198,7 +198,7 @@ class InterviewMonitor {
 
   handlePasteEvent(message, sender) {
     this.pasteCount++;
-    console.log(`📋 Paste Event #${this.pasteCount} on ${sender.tab?.url}`);
+    console.log(`Paste Event #${this.pasteCount} on ${sender.tab?.url}`);
     
     this.sendEventToBackend({
       type: "PASTE_EVENT",

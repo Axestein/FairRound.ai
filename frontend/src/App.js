@@ -41,7 +41,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>📊 Interview Monitor Dashboard</h1>
+        <h1>FairRound.ai - Interview Monitor Dashboard</h1>
       </header>
       
       <div className="dashboard">
