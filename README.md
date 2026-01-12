@@ -7,3 +7,4 @@ Frontend-https://fair-round-ai.vercel.app/
 <img width="1912" height="1009" alt="Screenshot 2026-01-12 180532" src="https://github.com/user-attachments/assets/10e9c6c4-e550-48ed-9b87-0aa0ecd866be" />
 <img width="872" height="418" alt="Screenshot 2026-01-12 180642" src="https://github.com/user-attachments/assets/c190ff89-a470-4f28-999c-dbb4ccc73056" />
 <img width="1917" height="967" alt="image" src="https://github.com/user-attachments/assets/e9e2f738-69fa-4827-8d7a-a60c598a7645" />
+<img width="954" height="671" alt="image" src="https://github.com/user-attachments/assets/5e89b7ad-0b9f-4ee9-8247-07dc50f9ee53" />
