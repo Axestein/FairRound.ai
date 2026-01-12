@@ -23,207 +23,176 @@
 //   }
 // });
 
-// Premium Interview Monitor - Popup UI
-class InterviewMonitorPopup {
-  constructor() {
-    this.initialize();
-  }
-
-  async initialize() {
-    console.log('🎯 Popup Initializing...');
-    
-    // Get initial status
-    await this.updateStatus();
-    
-    // Setup event listeners
-    this.setupEventListeners();
-    
-    // Setup real-time updates
-    this.setupRealTimeUpdates();
-    
-    // Update UI
-    this.updateUI();
-    
-    console.log('✅ Popup Ready');
-  }
-
-  async updateStatus() {
-    try {
-      const response = await chrome.runtime.sendMessage({ type: 'GET_STATUS' });
-      if (response) {
-        this.status = response;
-        this.updateUI();
-      }
-    } catch (error) {
-      console.error('Failed to get status:', error);
-      this.status = {
-        tabSwitches: 0,
-        pasteEvents: 0,
-        isMonitoring: true,
-        risk: '0.00',
-        lastUpdated: new Date().toISOString()
-      };
+// Popup Script - Fixed for NaN
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('Popup loaded');
+  
+  // Elements
+  const tabCountEl = document.getElementById('tabCount');
+  const pasteCountEl = document.getElementById('pasteCount');
+  const riskLevelEl = document.getElementById('riskLevel');
+  const statusEl = document.getElementById('status');
+  const toggleBtn = document.getElementById('toggleMonitor');
+  const testBtn = document.getElementById('testBackend');
+  const resetBtn = document.getElementById('resetCounts');
+  const lastUpdatedEl = document.getElementById('lastUpdated');
+  
+  // Initialize
+  await updateStatus();
+  
+  // Event Listeners
+  toggleBtn?.addEventListener('click', async () => {
+    const response = await chrome.runtime.sendMessage({ type: 'TOGGLE_MONITORING' });
+    if (response) {
+      await updateStatus();
     }
-  }
-
-  setupEventListeners() {
-    // Toggle monitoring button
-    document.getElementById('toggleMonitor').addEventListener('click', async () => {
-      const response = await chrome.runtime.sendMessage({ type: 'TOGGLE_MONITORING' });
-      if (response) {
-        this.status.isMonitoring = response.isMonitoring;
-        this.updateUI();
-      }
-    });
-
-    // Reset button
-    document.getElementById('resetCounts').addEventListener('click', async () => {
-      if (confirm('Reset all counts to zero?')) {
-        const response = await chrome.runtime.sendMessage({ type: 'RESET_COUNTS' });
-        if (response?.success) {
-          await this.updateStatus();
-        }
-      }
-    });
-
-    // Test backend button
-    document.getElementById('testBackend').addEventListener('click', () => {
-      this.testBackendConnection();
-    });
-
-    // Open dashboard button
-    document.getElementById('openDashboard').addEventListener('click', () => {
-      chrome.tabs.create({ url: 'http://localhost:8000/debug' });
-    });
-
-    // View details button
-    document.getElementById('viewDetails').addEventListener('click', () => {
-      chrome.tabs.create({ url: 'http://localhost:3000' });
-    });
-  }
-
-  setupRealTimeUpdates() {
-    // Listen for updates from background script
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.type === 'EVENT_UPDATE') {
-        this.handleEventUpdate(message);
-      }
-    });
-  }
-
-  handleEventUpdate(message) {
-    this.status.tabSwitches = message.counts.tabSwitches;
-    this.status.pasteEvents = message.counts.pasteEvents;
-    this.status.risk = message.risk;
-    this.status.lastUpdated = new Date().toISOString();
-    
-    this.updateUI();
-    this.showNotification(message.eventType);
-  }
-
-  showNotification(eventType) {
-    const notifications = {
-      'TAB_SWITCH': 'Tab switch detected',
-      'PASTE_EVENT': 'Copy-paste detected'
-    };
-    
-    const notification = document.getElementById('notification');
-    notification.textContent = notifications[eventType] || 'New event detected';
-    notification.classList.add('show');
-    
-    setTimeout(() => {
-      notification.classList.remove('show');
-    }, 3000);
-  }
-
-  updateUI() {
-    if (!this.status) return;
-
-    // Update counts
-    document.getElementById('tabCount').textContent = this.status.tabSwitches;
-    document.getElementById('pasteCount').textContent = this.status.pasteEvents;
-    
-    // Update risk
-    const riskElement = document.getElementById('riskLevel');
-    const riskValue = parseFloat(this.status.risk);
-    riskElement.textContent = `${(riskValue * 100).toFixed(0)}%`;
-    riskElement.className = 'risk-level';
-    
-    if (riskValue > 0.7) {
-      riskElement.classList.add('high');
-    } else if (riskValue > 0.4) {
-      riskElement.classList.add('medium');
-    } else {
-      riskElement.classList.add('low');
-    }
-
-    // Update monitoring status
-    const toggleBtn = document.getElementById('toggleMonitor');
-    const statusIndicator = document.getElementById('statusIndicator');
-    const statusText = document.getElementById('statusText');
-    
-    if (this.status.isMonitoring) {
-      toggleBtn.innerHTML = '<i class="icon-stop"></i> Stop Monitoring';
-      toggleBtn.classList.remove('inactive');
-      toggleBtn.classList.add('active');
-      statusIndicator.className = 'status-indicator active';
-      statusText.textContent = 'Active';
-      statusText.className = 'status-text active';
-    } else {
-      toggleBtn.innerHTML = '<i class="icon-play"></i> Start Monitoring';
-      toggleBtn.classList.remove('active');
-      toggleBtn.classList.add('inactive');
-      statusIndicator.className = 'status-indicator inactive';
-      statusText.textContent = 'Inactive';
-      statusText.className = 'status-text inactive';
-    }
-
-    // Update last updated time
-    const lastUpdated = document.getElementById('lastUpdated');
-    if (this.status.lastUpdated) {
-      const date = new Date(this.status.lastUpdated);
-      lastUpdated.textContent = `Updated: ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    }
-  }
-
-  async testBackendConnection() {
-    const testBtn = document.getElementById('testBackend');
-    const originalText = testBtn.innerHTML;
-    
-    testBtn.innerHTML = '<i class="icon-loading"></i> Testing...';
+  });
+  
+  testBtn?.addEventListener('click', async () => {
+    testBtn.innerHTML = '🔄 Testing...';
     testBtn.disabled = true;
     
     try {
-      const response = await fetch('http://localhost:8000/');
-      const data = await response.json();
+      const response = await chrome.runtime.sendMessage({ type: 'TEST_CONNECTION' });
       
-      this.showToast('✅ Backend connected successfully!', 'success');
-      console.log('Backend response:', data);
-      
+      if (response?.success) {
+        showNotification('✅ ' + response.message, 'success');
+      } else {
+        showNotification('❌ ' + (response?.message || 'Connection failed'), 'error');
+      }
     } catch (error) {
-      this.showToast('❌ Backend connection failed!', 'error');
-      console.error('Backend test failed:', error);
-      
+      showNotification('❌ Test failed: ' + error.message, 'error');
     } finally {
-      testBtn.innerHTML = originalText;
+      testBtn.innerHTML = '🧪 Test Backend';
       testBtn.disabled = false;
     }
+  });
+  
+  resetBtn?.addEventListener('click', async () => {
+    if (confirm('Reset all counts to zero?')) {
+      const response = await chrome.runtime.sendMessage({ type: 'RESET_COUNTS' });
+      if (response?.success) {
+        await updateStatus();
+        showNotification('✅ Counts reset', 'success');
+      }
+    }
+  });
+  
+  // Listen for updates from background
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'EVENT_UPDATE') {
+      updateDisplay(message.counts, message.risk);
+    }
+  });
+  
+  // Auto-update every 2 seconds
+  setInterval(updateStatus, 2000);
+  
+  // Functions
+  async function updateStatus() {
+    try {
+      const response = await chrome.runtime.sendMessage({ type: 'GET_STATUS' });
+      if (response) {
+        updateDisplay(
+          { 
+            tabSwitches: response.tabSwitches || 0, 
+            pasteEvents: response.pasteEvents || 0 
+          },
+          response.risk || '0.00'
+        );
+        
+        // Update status
+        if (statusEl) {
+          if (response.isMonitoring) {
+            statusEl.textContent = '🟢 Monitoring Active';
+            statusEl.className = 'status active';
+            if (toggleBtn) toggleBtn.textContent = 'Stop Monitoring';
+          } else {
+            statusEl.textContent = '🔴 Monitoring Inactive';
+            statusEl.className = 'status inactive';
+            if (toggleBtn) toggleBtn.textContent = 'Start Monitoring';
+          }
+        }
+        
+        // Update last updated
+        if (lastUpdatedEl && response.lastUpdated) {
+          const date = new Date(response.lastUpdated);
+          lastUpdatedEl.textContent = 'Updated: ' + date.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get status:', error);
+      // Set default values
+      updateDisplay({ tabSwitches: 0, pasteEvents: 0 }, '0.00');
+    }
   }
-
-  showToast(message, type = 'info') {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = `toast ${type} show`;
+  
+  function updateDisplay(counts, risk) {
+    // Safely parse values
+    const tabSwitches = parseInt(counts.tabSwitches) || 0;
+    const pasteEvents = parseInt(counts.pasteEvents) || 0;
+    const riskValue = parseFloat(risk) || 0;
     
+    // Update UI
+    if (tabCountEl) tabCountEl.textContent = tabSwitches;
+    if (pasteCountEl) pasteCountEl.textContent = pasteEvents;
+    
+    if (riskLevelEl) {
+      riskLevelEl.textContent = `${(riskValue * 100).toFixed(1)}%`;
+      
+      // Set risk color
+      riskLevelEl.className = 'risk-level';
+      if (riskValue > 0.7) {
+        riskLevelEl.classList.add('high');
+      } else if (riskValue > 0.4) {
+        riskLevelEl.classList.add('medium');
+      } else {
+        riskLevelEl.classList.add('low');
+      }
+    }
+  }
+  
+  function showNotification(message, type = 'info') {
+    // Create notification element if it doesn't exist
+    let notification = document.getElementById('notification');
+    if (!notification) {
+      notification = document.createElement('div');
+      notification.id = 'notification';
+      notification.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s;
+      `;
+      document.body.appendChild(notification);
+    }
+    
+    // Set style based on type
+    if (type === 'success') {
+      notification.style.background = '#28a745';
+    } else if (type === 'error') {
+      notification.style.background = '#dc3545';
+    } else {
+      notification.style.background = '#007bff';
+    }
+    
+    notification.textContent = message;
+    notification.style.opacity = '1';
+    
+    // Hide after 3 seconds
     setTimeout(() => {
-      toast.classList.remove('show');
+      notification.style.opacity = '0';
     }, 3000);
   }
-}
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  new InterviewMonitorPopup();
 });
 
 

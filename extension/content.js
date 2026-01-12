@@ -50,11 +50,11 @@
 // });
 
 // Simple content script for paste detection
-console.log('🔍 Interview Monitor - Content Script Active');
+console.log('Interview Monitor - Content Script Active');
 
 // Listen for paste events
 document.addEventListener('paste', (event) => {
-    console.log('📋 Paste detected on:', window.location.href);
+    console.log('Paste detected on:', window.location.href);
     
     // Send message to background script
     chrome.runtime.sendMessage({
@@ -72,4 +72,4 @@ document.addEventListener('copy', (event) => {
     // Could also track copy events
 });
 
-console.log('✅ Content script loaded successfully');
+console.log('Content script loaded successfully');
