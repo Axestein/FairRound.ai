@@ -18,8 +18,9 @@
 
 **Detect AI-assisted cheating during online interviews in real-time**
 
-[Live Dashboard](#live-demo) • [Features](#features) • [Installation](#installation) • [Usage](#usage) • [Architecture](#architecture) • [Contributing](#contributing)
-<img width="967" height="764" alt="Lean Canvas (Copy) (1)" src="https://github.com/user-attachments/assets/9d203d81-0731-44e1-8522-c07146d48429" />
+[Live Dashboard](#live-demo) • [Features](#features) • [Installation](#installation) • [Usage](#usage) • [Architecture](#architecture) 
+
+<img width="707" height="513" alt="Lean Canvas (Copy) (1)" src="https://github.com/user-attachments/assets/8e575c89-1341-4327-b64c-dceabea128d1" />
 
 </div>
 
@@ -64,7 +65,7 @@ FairRound.ai is a comprehensive solution that monitors and detects AI-assisted b
 - **Free Deployment**: 100% free hosting (Render + Vercel)
 
 ## Architecture
-![archdiag](https://github.com/user-attachments/assets/d5e145c0-3adc-4e45-bdb1-dcdb2c20f337)
+<img width="707" height="513" alt="archdiag" src="https://github.com/user-attachments/assets/d5e145c0-3adc-4e45-bdb1-dcdb2c20f337" />
 
 ### **System Components**
 
@@ -85,6 +86,22 @@ FairRound.ai is a comprehensive solution that monitors and detects AI-assisted b
    - Real-time charts and graphs
    - Live risk score updates
    - Event visualization
+
+## Project Screenshots
+### Row 1
+| Backend logs from /debug (local) |  Realtime updation of Events (deployed) |
+|--------|--------|
+| <img src="https://github.com/user-attachments/assets/d7e47aa9-b98b-4eec-82ee-15a5993d1b7a" width="100%"> | <img src="https://github.com/user-attachments/assets/83c0be4c-620c-42f4-99fc-47bbccccaa27" width="100%"> |
+
+### Row 2
+| Risk Summary | Frontend Dashboard |
+|--------|--------|
+| <img src="https://github.com/user-attachments/assets/4ae2ca48-c399-4fc2-8368-23ed47852359" width="100%"> | <img src="https://github.com/user-attachments/assets/10e9c6c4-e550-48ed-9b87-0aa0ecd866be" width="100%"> |
+
+### Row 3
+| Terminal Logs(indicating api is healthy) | Realtime Use in competitions or interviews |
+|--------|--------|
+| <img src="https://github.com/user-attachments/assets/c190ff89-a470-4f28-999c-dbb4ccc73056" width="100%"> | <img src="https://github.com/user-attachments/assets/e9e2f738-69fa-4827-8d7a-a60c598a7645" width="100%"> |
 
 ## Quick Start
 
@@ -170,7 +187,7 @@ ai-interview-monitor/
 └── README.md                   # This file
 ```
 
-## 🔌 API Reference
+## API Reference
 
 ### **Endpoints**
 
@@ -341,10 +358,11 @@ This tool is designed to **assist** in maintaining interview integrity, not to m
 </div>
 
 
+
+
 <img width="1594" height="882" alt="Screenshot 2026-01-10 140826" src="https://github.com/user-attachments/assets/d7e47aa9-b98b-4eec-82ee-15a5993d1b7a" />
 <img width="1895" height="962" alt="Screenshot 2026-01-12 180830" src="https://github.com/user-attachments/assets/83c0be4c-620c-42f4-99fc-47bbccccaa27" />
 <img width="699" height="251" alt="Screenshot 2026-01-12 181029" src="https://github.com/user-attachments/assets/4ae2ca48-c399-4fc2-8368-23ed47852359" />
 <img width="1912" height="1009" alt="Screenshot 2026-01-12 180532" src="https://github.com/user-attachments/assets/10e9c6c4-e550-48ed-9b87-0aa0ecd866be" />
 <img width="872" height="418" alt="Screenshot 2026-01-12 180642" src="https://github.com/user-attachments/assets/c190ff89-a470-4f28-999c-dbb4ccc73056" />
 <img width="1917" height="967" alt="image" src="https://github.com/user-attachments/assets/e9e2f738-69fa-4827-8d7a-a60c598a7645" />
-<img width="954" height="671" alt="image" src="https://github.com/user-attachments/assets/5e89b7ad-0b9f-4ee9-8247-07dc50f9ee53" />
