@@ -36,6 +36,7 @@ FairRound.ai is a comprehensive solution that monitors and detects AI-assisted b
 | **Backend API** | [https://ai-interview-monitor-backend.onrender.com](https://ai-interview-monitor-backend.onrender.com) | 🟢 Live |
 | **Debug Dashboard** | [https://ai-interview-monitor-backend.onrender.com/debug](https://ai-interview-monitor-backend.onrender.com/debug) | 🟢 Live |
 | **Health Check** | [https://ai-interview-monitor-backend.onrender.com/health](https://ai-interview-monitor-backend.onrender.com/health) | 🟢 Live |
+| **Risk Summary** | [https://ai-interview-monitor-backend.onrender.com/api/risk-summary](https://ai-interview-monitor-backend.onrender.com/api/risk-summary) | 🟢 Live |
 
 ## Features
 
